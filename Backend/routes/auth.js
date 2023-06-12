@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const { body, validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');             //for password hashing and salt adding
+const jwt = require('jsonwebtoken');            //to generate JWT token for secure connection
+
+const JWT_secret = "Thi$i$@$ecret";             //JWT secret key
 
 //cratea a user using : POST "api/auth/createuser" No Login required  
 router.post('/createuser', [
@@ -16,7 +20,7 @@ router.post('/createuser', [
         return res.status(400).json({ errors: errors.array() });
     }
 
-    
+
     try {
         //Check whether the user exists already with same email id
         let user = await User.findOne({ email: req.body.email });
@@ -24,14 +28,25 @@ router.post('/createuser', [
             return (res.status(400).json({ error: "Sorry! the user with this Email already exists." }));
         }
 
+        const salt = await bcrypt.genSalt(10);                              //this will generate a salt
+        const secPass = await bcrypt.hash(req.body.password, salt);        //it generate a hashed passsword with salt
+
         //create a new uer
         user = await User.create({
             name: req.body.name,
-            password: req.body.password,
+            password: secPass,
             email: req.body.email
-        })
-        res.json(user);         //sending response
-    } 
+        });
+
+        //jwt authentication 
+        const data = {
+            user: {
+                id: user.id
+            }
+        };
+        const authToken = jwt.sign(data, JWT_secret);
+        res.json(authToken);         //sending response
+    }
 
     //catching any error if occurs...
     catch (error) {
