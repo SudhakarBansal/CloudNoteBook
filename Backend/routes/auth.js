@@ -98,14 +98,14 @@ router.post('/login', [
 
 //Route 3 : Getting LoggedIn user details : POST "api/auth/getuser" Login required  
 
-router.post('/getuser',fetchuser, async (req, res) => {
-        try {
-            const userid = req.user.id;
-            const user = await User.findById(userid).select("-password");
-            res.send(user);
-        } catch (error) {
-            console.error(error.message);
-            res.status(500).send("Internal Server Error : ");
-        }
-    })
+router.post('/getuser', fetchuser, async (req, res) => {
+    try {
+        const userid = req.user.id;
+        const user = await User.findById(userid).select("-password");
+        res.send(user);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal Server Error : ");
+    }
+})
 module.exports = router;
