@@ -4,10 +4,10 @@ const User = require('../models/User');
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');             //for password hashing and salt adding
 const jwt = require('jsonwebtoken');            //to generate JWT token for secure connection
-
+const fetchuser = require('../middleware/fetchuser');
 const JWT_secret = "Thi$i$@$ecret";             //JWT secret key
 
-//crate a user using : POST "api/auth/createuser" No Login required  
+//Route 1 : crate a user using : POST "api/auth/createuser" No Login required  
 
 router.post('/createuser', [
     body('name', 'Enter a valid name.').isLength({ min: 3 }),   //express Validators
@@ -46,7 +46,7 @@ router.post('/createuser', [
             }
         };
         const authToken = jwt.sign(data, JWT_secret);
-        res.json({authToken});         //sending response
+        res.json({ authToken });         //sending response
     }
 
     //catching any error if occurs...
@@ -57,7 +57,7 @@ router.post('/createuser', [
 
 })
 
-//Authenticating a user using : POST "api/auth/login" No Login required  
+//Route 2 :Authenticating a user using : POST "api/auth/login" No Login required  
 
 router.post('/login', [
     body('email', 'Enter a valid email.').isEmail(),           //express Validators
@@ -87,7 +87,7 @@ router.post('/login', [
             }
         };
         const authToken = jwt.sign(payload, JWT_secret);
-        res.json({authToken});         //sending response
+        res.json({ authToken });         //sending response
     }
     catch (error) {
         console.error(error.message);
@@ -95,4 +95,17 @@ router.post('/login', [
     }
 
 })
+
+//Route 3 : Getting LoggedIn user details : POST "api/auth/getuser" Login required  
+
+router.post('/getuser',fetchuser, async (req, res) => {
+        try {
+            const userid = req.user.id;
+            const user = await User.findById(userid).select("-password");
+            res.send(user);
+        } catch (error) {
+            console.error(error.message);
+            res.status(500).send("Internal Server Error : ");
+        }
+    })
 module.exports = router;
