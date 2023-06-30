@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import Navbar from "./components/Navbar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotesState from './context/notes/NotesState';
+import Alert from './components/Alert';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <NotesState>
         <BrowserRouter>
           <Navbar />
+          <Alert message = "this is a good thing"/>
           <div className='container'>
             <Routes>
               <Route exact path="/" element={<Home />}></Route>
