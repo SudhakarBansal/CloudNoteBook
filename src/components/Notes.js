@@ -6,15 +6,19 @@ import Noteitem from './Noteitem';
 const Notes = (props) => {
     const context = useContext(NotesContext);
     const { notes, getNotes, editNote } = context;
-
-    useEffect(() => {
-        getNotes()
-        // eslint-disable-next-line
-    }, [])
-
     const ref = useRef(null);
     const refClose = useRef(null);
     const [note, setnote] = useState({ id: "", etitle: "", edescription: "", etag: "" });
+
+    useEffect(() => {
+        if (localStorage.getItem('token')) {
+            getNotes()
+        } else {
+             window.location.href = '/login';
+        }
+        // eslint-disable-next-line
+    }, [])
+
 
     const updateNote = (currentNote) => {
         ref.current.click();
@@ -24,7 +28,7 @@ const Notes = (props) => {
     const handleClick = (e) => {
         editNote(note.id, note.etitle, note.edescription, note.etag);
         refClose.current.click();
-        props.showAlert("Updated Successfully","success")
+        props.showAlert("Updated Successfully", "success")
     }
 
     const onchange = (e) => {
@@ -32,7 +36,7 @@ const Notes = (props) => {
     }
     return (
         <>
-            <AddNote showAlert= {props.showAlert}/>
+            <AddNote showAlert={props.showAlert} />
             <button ref={ref} type="button" className="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 Launch demo modal
             </button>
@@ -62,7 +66,7 @@ const Notes = (props) => {
                         </div>
                         <div className="modal-footer">
                             <button ref={refClose} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button disabled = {note.etitle.length<5 || note.edescription.length <5} type="button" onClick={handleClick} className="btn btn-primary">Update Note</button>
+                            <button disabled={note.etitle.length < 5 || note.edescription.length < 5} type="button" onClick={handleClick} className="btn btn-primary">Update Note</button>
                         </div>
                     </div>
                 </div>

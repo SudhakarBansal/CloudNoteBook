@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
 
 const Login = (props) => {
     const [credentials, setcredentials] = useState({ email: "", password: "" });
-    let navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,11 +14,12 @@ const Login = (props) => {
         });
         const json = await response.json();
         console.log(json);
+        
         if (json.success) {
             //Save the authToken in local storage and redierect
-            localStorage.setItem("token", json.authtoken);
-            navigate("/");
+            localStorage.setItem('token', json.authToken);
             props.showAlert("Account created Successfully.","success");
+            window.location.href = '/';
 
         }
         else {
@@ -31,7 +30,8 @@ const Login = (props) => {
         setcredentials({ ...credentials, [e.target.name]: e.target.value });
     }
     return (
-        <div>
+        <div className='mt-2'>
+            <h2>Login to Continue</h2>
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">Email address</label>
